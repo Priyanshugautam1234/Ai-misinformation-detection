@@ -1,0 +1,10 @@
+{
+  "name": "ai-misinformation-platform",
+  "version": "1.0.0",
+  "description": "AI Misinformation Detection Platform Root Runner",
+  "scripts": {
+    "backend": "python backend/run.py",
+    "frontend": "npm --prefix frontend run dev",
+    "dev": "npm run backend & npm run frontend"
+  }
+}
