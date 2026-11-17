@@ -1,0 +1,92 @@
+[
+  {
+    "id": "eval_01",
+    "modality": "text_claim",
+    "query": "COVID-19 vaccines contain 5G microchips for trackability.",
+    "category": "Health",
+    "ground_truth_verdict": "FALSE / DEBUNKED",
+    "expected_label": "debunked",
+    "ground_truth_context": "COVID-19 vaccines do not contain microchips, 5G tracking antennas, or magnetic components. They consist of mRNA, lipids, salts, and sugars."
+  },
+  {
+    "id": "eval_02",
+    "modality": "text_claim",
+    "query": "Volcanoes emit far more carbon dioxide annually than all human industry combined.",
+    "category": "Climate Science",
+    "ground_truth_verdict": "FALSE / DEBUNKED",
+    "expected_label": "debunked",
+    "ground_truth_context": "Human activities emit roughly 36 billion tons of CO2 annually, which is 60 to 100 times greater than volcanic activity."
+  },
+  {
+    "id": "eval_03",
+    "modality": "text_claim",
+    "query": "Humans swallow an average of eight spiders a year in their sleep.",
+    "category": "Biology",
+    "ground_truth_verdict": "FALSE / MYTH",
+    "expected_label": "debunked",
+    "ground_truth_context": "Humans do not swallow eight spiders a year in their sleep; spiders actively avoid large sleeping mammals."
+  },
+  {
+    "id": "eval_04",
+    "modality": "text_claim",
+    "query": "Bananas in supermarkets are being injected with HIV-positive blood.",
+    "category": "Public Safety",
+    "ground_truth_verdict": "FALSE / HOAX",
+    "expected_label": "debunked",
+    "ground_truth_context": "HIV cannot survive in bananas or outside a human host environment, and cannot be transmitted through food."
+  },
+  {
+    "id": "eval_05",
+    "modality": "scam_message",
+    "query": "URGENT! Your bank account has been suspended. Reply immediately with your OTP code to prevent permanent termination.",
+    "category": "Financial Fraud",
+    "ground_truth_verdict": "CRITICAL SCAM",
+    "expected_label": "scam",
+    "ground_truth_context": "Banks never request one-time passwords (OTP) or password resets via unsolicited SMS text messages."
+  },
+  {
+    "id": "eval_06",
+    "modality": "scam_message",
+    "query": "CONGRATULATIONS! You have won $1,000,000 in the international mobile lottery. Call now to claim prize.",
+    "category": "Financial Fraud",
+    "ground_truth_verdict": "CRITICAL SCAM",
+    "expected_label": "scam",
+    "ground_truth_context": "Lottery prize claims demanding upfront calls or fees are advance-fee fraud schemes."
+  },
+  {
+    "id": "eval_07",
+    "modality": "legitimate_message",
+    "query": "Hey, let us meet for lunch at noon tomorrow near the library.",
+    "category": "General Communication",
+    "ground_truth_verdict": "SAFE",
+    "expected_label": "ham",
+    "ground_truth_context": "Standard conversational message with zero threat indicators."
+  },
+  {
+    "id": "eval_08",
+    "modality": "legitimate_message",
+    "query": "Your package has been delivered to your front porch by USPS carrier.",
+    "category": "Transactional",
+    "ground_truth_verdict": "SAFE",
+    "expected_label": "ham",
+    "ground_truth_context": "Standard carrier confirmation with no suspicious redirect links or urgent credential requests."
+  },
+  {
+    "id": "eval_09",
+    "modality": "edge_case_satire",
+    "query": "theonion.com article reporting Congress approves bill outlawing Mondays.",
+    "category": "Satire",
+    "ground_truth_verdict": "SATIRE",
+    "expected_label": "satire",
+    "ground_truth_context": "Satirical news focusing on social humor with intentionally fictional reporting."
+  },
+  {
+    "id": "eval_10",
+    "modality": "image_forensic",
+    "query": "whatsapp_compressed_camera_snapshot.jpg",
+    "category": "Media Integrity",
+    "ground_truth_verdict": "TRUSTWORTHY / SUSPICIOUS",
+    "expected_label": "real_compressed",
+    "ground_truth_context": "Camera photo compressed by messaging platform with missing EXIF headers but zero malicious pixel splicing."
+  }
+]

@@ -1,0 +1,52 @@
+{
+  "timestamp": "2026-11-17T07:18:55Z",
+  "nlp_scam_model": {
+    "model_name": "TF-IDF + Logistic Regression",
+    "task": "Scam & Phishing Message Classification",
+    "accuracy": 0.75,
+    "precision": 0.75,
+    "recall": 0.75,
+    "f1_score": 0.75,
+    "pr_auc": 0.965,
+    "latency_ms": {
+      "p50": 0.25,
+      "p95": 0.43,
+      "p99": 0.87
+    }
+  },
+  "image_forensics": {
+    "model_name": "PyTorch ResNet-18 + Error Level Analysis (ELA)",
+    "task": "Digital Image Tampering & Deepfake Forensics",
+    "balanced_accuracy": 0.912,
+    "precision_real": 0.934,
+    "recall_fake": 0.891,
+    "f1_score": 0.912,
+    "sample_real_trust_score": 45,
+    "sample_fake_trust_score": 5,
+    "latency_ms": {
+      "p50": 42.17,
+      "p95": 70.6,
+      "p99": 97.64
+    }
+  },
+  "vector_rag_and_evaluation": {
+    "engine": "FAISS (IndexFlatIP) & Qdrant Embedded Vector Engine",
+    "reranker": "Hybrid Cross-Encoder + Reciprocal Rank Fusion (RRF, k=60)",
+    "ragas_metrics": {
+      "mean_faithfulness": 0.825,
+      "mean_answer_relevance": 0.5963,
+      "mean_context_precision": 1.0,
+      "mean_context_recall": 1.0
+    },
+    "deepeval_metrics": {
+      "mean_hallucination_metric": 0.175,
+      "mean_contextual_relevancy": 0.6875
+    },
+    "latency_ms": {
+      "faiss_pipeline_p50": 17.49,
+      "faiss_pipeline_p95": 17.87,
+      "qdrant_pipeline_p50": 17.52,
+      "qdrant_pipeline_p95": 19.0
+    }
+  }
+}

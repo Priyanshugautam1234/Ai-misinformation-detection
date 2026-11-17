@@ -189,5 +189,50 @@ class TestMisinfoShieldAPI(unittest.TestCase):
         self.assertEqual(data2["threat_level"], "Safe")
         self.assertFalse(data2["is_scam"])
 
+    def test_rag_search_faiss_and_qdrant(self):
+        # Test FAISS
+        faiss_payload = {"query": "COVID vaccines 5G tracking microchip", "top_k": 2, "engine": "faiss"}
+        res_faiss = self.client.post("/api/rag/search", json=faiss_payload)
+        self.assertEqual(res_faiss.status_code, 200)
+        data_faiss = res_faiss.json()
+        self.assertTrue(data_faiss["success"])
+        self.assertGreaterEqual(len(data_faiss["documents"]), 1)
+        self.assertIn("FAISS", data_faiss["documents"][0]["engine"])
+
+        # Test Qdrant
+        qdrant_payload = {"query": "COVID vaccines 5G tracking microchip", "top_k": 2, "engine": "qdrant"}
+        res_qdrant = self.client.post("/api/rag/search", json=qdrant_payload)
+        self.assertEqual(res_qdrant.status_code, 200)
+        data_qdrant = res_qdrant.json()
+        self.assertTrue(data_qdrant["success"])
+        self.assertGreaterEqual(len(data_qdrant["documents"]), 1)
+        self.assertIn("Qdrant", data_qdrant["documents"][0]["engine"])
+
+    def test_rag_verify_with_ragas_and_deepeval(self):
+        payload = {"claim": "Volcanoes emit far more CO2 than human industry.", "vector_engine": "faiss"}
+        res = self.client.post("/api/rag/verify", json=payload)
+        self.assertEqual(res.status_code, 200)
+        data = res.json()
+        self.assertTrue(data["success"])
+        self.assertIn("FALSE", data["verdict"])
+        self.assertIn("ragas_metrics", data)
+        self.assertIn("faithfulness", data["ragas_metrics"])
+        self.assertIn("answer_relevance", data["ragas_metrics"])
+        self.assertIn("context_precision", data["ragas_metrics"])
+        self.assertIn("context_recall", data["ragas_metrics"])
+        self.assertIn("deepeval_metrics", data)
+        self.assertIn("hallucination_metric", data["deepeval_metrics"])
+        self.assertIn("contextual_relevancy", data["deepeval_metrics"])
+
+    def test_rag_benchmark_endpoint(self):
+        res = self.client.get("/api/rag/benchmark")
+        self.assertEqual(res.status_code, 200)
+        data = res.json()
+        self.assertTrue(data["success"])
+        self.assertIn("benchmark_summary", data)
+        self.assertGreater(data["benchmark_summary"]["mean_ragas_faithfulness"], 0.6)
+        self.assertLess(data["benchmark_summary"]["mean_deepeval_hallucination_rate"], 0.4)
+
 if __name__ == "__main__":
     unittest.main()
+

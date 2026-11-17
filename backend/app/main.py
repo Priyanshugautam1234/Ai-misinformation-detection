@@ -235,3 +235,129 @@ def fetch_system_analytics():
     except Exception as e:
         logger.error(f"Analytics computation error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+# 4. Vector RAG & RAGAS/DeepEval Evaluation Endpoints
+from .vector_rag import rag_pipeline
+
+class RAGSearchRequest(BaseModel):
+    query: str
+    top_k: Optional[int] = 3
+    engine: Optional[str] = "faiss"
+
+class RAGVerifyRequest(BaseModel):
+    claim: str
+    top_k: Optional[int] = 3
+    vector_engine: Optional[str] = "faiss"
+
+class RAGIngestRequest(BaseModel):
+    title: str
+    text: str
+    category: Optional[str] = "General"
+    source: Optional[str] = "User Verified Ingest"
+    verdict: Optional[str] = "VERIFIED"
+
+@app.post("/api/rag/search")
+def search_vector_knowledge(request: RAGSearchRequest):
+    """
+    Performs dense semantic vector retrieval via FAISS or Qdrant with hybrid reranking.
+    """
+    try:
+        candidates = rag_pipeline.retrieve(request.query, top_k=request.top_k * 2, engine=request.engine)
+        reranked = rag_pipeline.reranker.rerank(request.query, candidates, top_k=request.top_k)
+        return {
+            "success": True,
+            "query": request.query,
+            "engine": request.engine,
+            "results_count": len(reranked),
+            "documents": reranked
+        }
+    except Exception as e:
+        logger.error(f"Vector search failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Vector search failed: {str(e)}")
+
+@app.post("/api/rag/verify")
+def verify_claim_with_rag(request: RAGVerifyRequest):
+    """
+    Executes end-to-end Fact-Checking RAG verification pipeline:
+    Dense Retrieval -> Hybrid Reranking -> Synthesis -> Full RAGAS & DeepEval Metric Suite.
+    """
+    try:
+        result = rag_pipeline.verify_claim(
+            claim_text=request.claim,
+            top_k=request.top_k,
+            vector_engine=request.vector_engine
+        )
+        return result
+    except Exception as e:
+        logger.error(f"RAG verification failed: {e}")
+        raise HTTPException(status_code=500, detail=f"RAG verification failed: {str(e)}")
+
+@app.post("/api/rag/ingest")
+def ingest_knowledge_document(request: RAGIngestRequest):
+    """
+    Ingests a new verified fact-check document into both FAISS and Qdrant in real-time.
+    """
+    try:
+        result = rag_pipeline.add_custom_document(
+            title=request.title,
+            text=request.text,
+            category=request.category,
+            source=request.source,
+            verdict=request.verdict
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Document ingestion failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Ingestion failed: {str(e)}")
+
+@app.get("/api/rag/benchmark")
+def run_ragas_deepeval_benchmark():
+    """
+    Evaluates RAGAS and DeepEval metrics across benchmark test claims.
+    """
+    test_suite = [
+        "COVID-19 vaccines contain 5G microchips to track citizens.",
+        "Volcanoes emit far more carbon dioxide than human factories and cars.",
+        "Humans swallow eight spiders each year while sleeping.",
+        "Bananas in supermarkets are injected with HIV blood.",
+        "Bank sent me an urgent text asking to reply with my account OTP."
+    ]
+    
+    results = []
+    faith_list = []
+    ans_rel_list = []
+    ctx_prec_list = []
+    hallucination_list = []
+    
+    for claim in test_suite:
+        res = rag_pipeline.verify_claim(claim, top_k=2, vector_engine="faiss")
+        ragas = res["ragas_metrics"]
+        deepeval = res["deepeval_metrics"]
+        
+        faith_list.append(ragas["faithfulness"])
+        ans_rel_list.append(ragas["answer_relevance"])
+        ctx_prec_list.append(ragas["context_precision"])
+        hallucination_list.append(deepeval["hallucination_metric"])
+        
+        results.append({
+            "claim": claim,
+            "verdict": res["verdict"],
+            "confidence": res["confidence"],
+            "ragas_faithfulness": ragas["faithfulness"],
+            "ragas_answer_relevance": ragas["answer_relevance"],
+            "ragas_context_precision": ragas["context_precision"],
+            "deepeval_hallucination": deepeval["hallucination_metric"]
+        })
+        
+    return {
+        "success": True,
+        "benchmark_summary": {
+            "mean_ragas_faithfulness": round(float(sum(faith_list) / len(faith_list)), 4),
+            "mean_ragas_answer_relevance": round(float(sum(ans_rel_list) / len(ans_rel_list)), 4),
+            "mean_ragas_context_precision": round(float(sum(ctx_prec_list) / len(ctx_prec_list)), 4),
+            "mean_deepeval_hallucination_rate": round(float(sum(hallucination_list) / len(hallucination_list)), 4),
+            "total_benchmark_cases": len(test_suite)
+        },
+        "detailed_evaluations": results
+    }
+
