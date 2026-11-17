@@ -6,10 +6,14 @@ from sklearn.feature_extraction.text import HashingVectorizer
 
 class DenseEmbeddingModel:
     """
-    Production-grade Dense Semantic Embedding Engine.
+    384-dimensional Sparse-Dense Subword Hashed Projection Engine (Edge CPU Optimized).
     Combines word-level n-grams and subword character-level representations
-    into normalized 384-dimensional dense vectors.
-    Supports exact dot product and cosine similarity searches in FAISS and Qdrant.
+    into normalized 384-dimensional dense vectors for sub-millisecond CPU inference.
+    
+    Architecture & Drop-in Compatibility:
+    - Default Mode: 384-d Sparse-Dense Subword Hashed Projection (zero external dependencies).
+    - Drop-in Production Target: sentence-transformers/all-MiniLM-L6-v2 or BAAI/bge-small-en-v1.5
+      (exact matching 384-dimensional vector space; zero vector DB schema modification required).
     """
     def __init__(self, embedding_dim: int = 384):
         self.embedding_dim = embedding_dim

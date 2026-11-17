@@ -160,16 +160,15 @@ class FactCheckingRAGPipeline:
         if best_similarity >= 0.15:
             verdict = top_doc.get("verdict", "UNVERIFIED")
             synthesis = (
-                f"Fact-Check Synthesis: Based on verified records from {top_doc.get('source')}, "
-                f"the claim '{claim_text}' is rated as {verdict}. {top_doc.get('text')}"
+                f"Verdict: {verdict}. {top_doc.get('text')} [Verified by {top_doc.get('source')}]."
             )
             ground_truth_ref = top_doc.get("text", "")
             confidence = round(min(0.99, max(0.60, best_similarity * 2.5)), 4)
         elif best_similarity >= 0.08:
             verdict = "INSUFFICIENT_EVIDENCE / UNVERIFIED"
             synthesis = (
-                f"Fact-Check Synthesis: Relevant contextual records were retrieved from {top_doc.get('source')}, "
-                f"but do not directly confirm the exact assertions of '{claim_text}'. Exercise caution."
+                f"Verdict: {verdict}. Contextual records from {top_doc.get('source')} "
+                f"do not conclusively substantiate the assertions in '{claim_text}'."
             )
             ground_truth_ref = top_doc.get("text", "")
             confidence = round(best_similarity, 4)
