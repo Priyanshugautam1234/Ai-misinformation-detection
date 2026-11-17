@@ -153,7 +153,6 @@ python -m unittest test_vector_rag.py test_api.py
 
 ## 📄 Documentation & Resources
 
-* [Interview Guide PDF](AI_Misinformation_Detection_Interview_Guide.pdf): Comprehensive 13-section technical Q&A covering system design, NLP, ResNet-18, FAISS/Qdrant, and RAGAS/DeepEval.
 * [Benchmarks Documentation](benchmarks/README.md): Detailed evaluation methodology and test suites.
 
 ---
